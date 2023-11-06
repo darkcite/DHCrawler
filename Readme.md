@@ -43,6 +43,8 @@ The `launch.json` file configures the debugging session. Create the file in the 
         }
     ]
 }
+```
+
 tasks.json
 The tasks.json file is used to build and run the Docker container. Create this file in the .vscode folder with the following content:
 
