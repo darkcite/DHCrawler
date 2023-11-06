@@ -6,13 +6,17 @@ This document provides instructions on setting up and running the Telegram Crawl
 
 Ensure Docker is available in your system's PATH with the following command:
 
+```bash
 export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+```
 
 ## Building the Docker Image
 
 To build the Docker image for the Telegram Crawler, use the following command:
 
+```bash
 docker build -t telegram-crawler .
+```
 
 ## Run and Debug in Docker
 
@@ -49,7 +53,6 @@ tasks.json
 The tasks.json file is used to build and run the Docker container. Create this file in the .vscode folder with the following content:
 
 ```json
-Copy code
 {
     "version": "2.0.0",
     "tasks": [
@@ -64,10 +67,14 @@ Copy code
         }
     ]
 }
+```
+
 Running the Container
 To run the container with the necessary port bindings, use the following command:
 
+```bash
 docker run -e TELEGRAM_API_ID='actual_api_id' -e TELEGRAM_API_HASH='actual_api_hash' -p 5678:5678 -it --rm --name telegram-debugging telegram-crawler
+```
 
 This command will start the container and remove it once the session is terminated. It also maps the local debugging port to the container's port.
 
