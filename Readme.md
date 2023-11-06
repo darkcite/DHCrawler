@@ -69,7 +69,7 @@ The tasks.json file is used to build and run the Docker container. Create this f
 }
 ```
 
-Running the Container
+##  Running the Container
 To run the container with the necessary port bindings, use the following command:
 
 ```bash
@@ -78,10 +78,10 @@ docker run -e TELEGRAM_API_ID='actual_api_id' -e TELEGRAM_API_HASH='actual_api_h
 
 This command will start the container and remove it once the session is terminated. It also maps the local debugging port to the container's port.
 
-Debugging with debugpy
+## Debugging with debugpy
 For debugging support within the container, you need to include debugpy in your Python application. Adjust your Python script to start a debugpy server, and ensure the Dockerfile installs debugpy.
 
-Additional Notes
+## Additional Notes
 Always ensure that your usage of the Telegram API is compliant with Telegram's Terms of Service.
 Be cautious when automatically joining channels or groups to avoid any actions that might be perceived as spam.
 Regularly review your development and debugging configurations to maintain a secure and efficient development environment.
