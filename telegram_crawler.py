@@ -9,6 +9,7 @@ import debugpy
 import os
 import asyncio
 import re
+import json
 
 # Define the API ID and Hash from my.telegram.org
 api_id = os.environ.get('TELEGRAM_API_ID')
@@ -16,6 +17,8 @@ api_hash = os.environ.get('TELEGRAM_API_HASH')
 
 # Create the client and connect
 client = TelegramClient('session_name', api_id, api_hash)
+# URL regex pattern
+url_pattern = r'(https?://[^\s]+)'
 
 async def join_channel_or_chat(link):
     try:
@@ -39,8 +42,25 @@ async def join_channel_or_chat(link):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-# URL regex pattern
-url_pattern = r'(https?://[^\s]+)'
+async def message_to_json(message):
+    # Create a dictionary to hold message data
+    message_data = {
+        'id': message.id,
+        'text': message.text,
+        'sender_id': message.sender_id,
+        'date': message.date.isoformat() if message.date else None,
+        'chat_id': message.chat_id,
+        'is_reply': message.is_reply,
+        'reply_to_msg_id': message.reply_to_msg_id,
+        # Add any other attributes you need
+    }
+    # If the message has a sender, try to get the sender's username
+    if message.sender_id:
+        sender = await client.get_entity(message.sender_id)
+        message_data['sender_username'] = getattr(sender, 'username', None)
+
+    # Serialize the dictionary to a JSON string
+    return json.dumps(message_data, ensure_ascii=False)
 
 async def process_historical_messages_from_accounts(accounts):
     for account in accounts:
@@ -67,7 +87,8 @@ async def fetch_top_messages_from_each_channel_or_group():
 
             # Fetch the top 5 messages from the channel or group
             async for message in client.iter_messages(dialog.entity, limit=5):
-                print(message.id, message.text)
+                message_json = await message_to_json(message)
+                print(message_json)
 
 async def main():
     # Start the debug server listening on the given port
