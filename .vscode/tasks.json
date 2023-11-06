@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build and Run Docker",
+            "type": "shell",
+            "command": "docker run -p 5678:5678 -v \"${workspaceFolder}\":/app telegram-crawler",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
