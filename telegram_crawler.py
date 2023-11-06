@@ -42,18 +42,19 @@ async def join_channel_or_chat(link):
 # URL regex pattern
 url_pattern = r'(https?://[^\s]+)'
 
-async def process_historical_messages():
-    print("Processing historical messages...")
-    user = await client.get_entity('kawaibreath')
-    async for message in client.iter_messages(user):
-        print(f"Processing message: {message.id} with content: {message.text}")
-        links = re.findall(url_pattern, message.text)
-        if links:
-            for link in links:
-                print(f"Found link: {link}")
-                await join_channel_or_chat(link)
-        else:
-            print(f"No links found in message: {message.id}")
+async def process_historical_messages_from_accounts(accounts):
+    for account in accounts:
+        print(f"Processing historical messages for {account}...")
+        user = await client.get_entity(account)
+        async for message in client.iter_messages(user):
+            print(f"Processing message: {message.id} with content: {message.text}")
+            links = re.findall(url_pattern, message.text)
+            if links:
+                for link in links:
+                    print(f"Found link: {link}")
+                    await join_channel_or_chat(link)
+            else:
+                print(f"No links found in message: {message.id}")
             
 async def fetch_top_messages_from_each_channel_or_group():
     # Get all the dialogs (conversations, groups, channels)
@@ -78,8 +79,16 @@ async def main():
     await client.start()
     print("Client Created")
     
-    # Process historical messages from a specific user (if needed)
-    await process_historical_messages()
+    # Get the list of usernames from the environment variable
+    # assuming the environment variable is named 'TELEGRAM_USERNAMES' and the usernames are comma-separated
+    usernames_to_process_env = os.getenv('TELEGRAM_USERNAMES', '')
+    usernames_to_process = usernames_to_process_env.split(',')
+
+    # Ensure that empty strings are not included in case there are trailing commas
+    usernames_to_process = [username.strip() for username in usernames_to_process if username.strip()]
+
+    # Process historical messages from the specified list of accounts
+    await process_historical_messages_from_accounts(usernames_to_process)
 
     # Fetch top messages from each channel or group
     await fetch_top_messages_from_each_channel_or_group()
