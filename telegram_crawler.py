@@ -15,6 +15,9 @@ import json
 api_id = os.environ.get('TELEGRAM_API_ID')
 api_hash = os.environ.get('TELEGRAM_API_HASH')
 
+# Make usernames_to_process a global variable
+usernames_to_process = []
+
 # Create the client and connect
 client = TelegramClient('session_name', api_id, api_hash)
 # URL regex pattern
@@ -89,8 +92,9 @@ async def fetch_top_messages_from_each_channel_or_group():
             async for message in client.iter_messages(dialog.entity, limit=5):
                 message_json = await message_to_json(message)
                 print(message_json)
-
+                
 async def main():
+    global usernames_to_process
     # Start the debug server listening on the given port
     debugpy.listen(('0.0.0.0', 5678))
     print("⏳ Waiting for debugger to attach...")
@@ -104,6 +108,7 @@ async def main():
     # assuming the environment variable is named 'TELEGRAM_USERNAMES' and the usernames are comma-separated
     usernames_to_process_env = os.getenv('TELEGRAM_USERNAMES', '')
     usernames_to_process = usernames_to_process_env.split(',')
+    print(f"Usernames to process: {usernames_to_process}")
 
     # Ensure that empty strings are not included in case there are trailing commas
     usernames_to_process = [username.strip() for username in usernames_to_process if username.strip()]
@@ -113,7 +118,8 @@ async def main():
 
     # Fetch top messages from each channel or group
     await fetch_top_messages_from_each_channel_or_group()
-
+    
+    # Add this before 'await client.run_until_disconnected()' to start the event loop
     await client.run_until_disconnected()
 
 if __name__ == '__main__':
